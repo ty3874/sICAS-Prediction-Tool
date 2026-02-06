@@ -46,26 +46,34 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 【关键修复】侧边栏折叠/展开按钮可见性 === */
-    /* 1. 针对收起后出现在左上角的“>”箭头 */
+    /* === 【终极修复】侧边栏收起后的“>”按钮 === */
+    /* 强制按钮一直显示，不透明，且加个背景色 */
     [data-testid="collapsedControl"] {
-        color: white !important; /* 强制箭头变白 */
-        background-color: #262730 !important; /* 给它加个深灰底色 */
-        border: 1px solid #4f4f4f; /* 加个边框 */
-        border-radius: 5px; /* 圆角 */
-        top: 1rem !important; /* 稍微调整位置 */
-        left: 1rem !important;
-    }
-    
-    /* 2. 鼠标放上去变亮 */
-    [data-testid="collapsedControl"]:hover {
-        background-color: #4fc3f7 !important; /* 悬停变蓝 */
-        color: black !important;
+        display: block !important;
+        color: #ffffff !important;         /* 箭头白色 */
+        background-color: #1565c0 !important; /* 背景蓝色，显眼 */
+        opacity: 1 !important;             /* 关键：强制不透明度为 100% */
+        visibility: visible !important;    /* 关键：强制可见 */
+        border: 1px solid white !important;
+        border-radius: 8px !important;
+        top: 15px !important;              /* 固定位置 */
+        left: 15px !important;
+        width: 40px !important;            /* 稍微大一点，好点 */
+        height: 40px !important;
+        z-index: 999999 !important;        /* 保证在最上层 */
+        transition: none !important;       /* 取消忽隐忽现的动画 */
     }
 
-    /* 3. 针对展开状态下的“X”关闭按钮（在侧边栏右上角） */
-    [data-testid="stSidebar"] button {
+    /* 鼠标悬停时的效果 */
+    [data-testid="collapsedControl"]:hover {
+        background-color: #0d47a1 !important; /* 悬停变深蓝 */
+        transform: scale(1.1); /* 稍微放大 */
+    }
+
+    /* === 侧边栏右上角的“X”关闭按钮 === */
+    button[kind="header"] {
         color: white !important;
+        background-color: transparent !important;
     }
 
     /* === 侧边栏折叠框 (Expander) 样式 === */
