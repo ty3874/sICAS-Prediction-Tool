@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整 (含顶栏、侧边栏按钮、输入框一致性修复) ---
+# --- 核心修复 2：CSS 样式调整 ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -51,7 +51,7 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 【新修复】5. 隐藏 NumberInput 的加减按钮，保持10个框整齐划一 === */
+    /* 5. 隐藏 NumberInput 的加减按钮，保持整齐 */
     [data-testid="stNumberInput"] button {
         display: none !important;
     }
@@ -185,8 +185,8 @@ st.sidebar.markdown("---")
 
 
 def user_input_features():
-    # 影像学 (默认展开)
-    with st.sidebar.expander("📊 Imaging (CTP/Angio)", expanded=True):
+    # 影像学 (默认展开) —— 【修改点】改为 CTP/CTA
+    with st.sidebar.expander("📊 Imaging (CTP/CTA)", expanded=True):
         st.caption("Hemodynamic & Anatomical features")
         rcbf34 = st.number_input("rCBF < 34% Volume (ml)", min_value=0.0, max_value=400.0, value=0.0, step=1.0,
                                  help="Volume of core infarct (severely hypoperfused tissue).")
