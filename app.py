@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整 (含顶栏修复) ---
+# --- 核心修复 2：CSS 样式调整 (含顶栏、侧边栏按钮、输入框一致性修复) ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -41,28 +41,31 @@ st.markdown("""
         background-color: #262730;
     }
 
-    /* === 【关键修复】强制顶部导航栏 (Header) 为深色 === */
-    /* 这就是之前的“漏网之鱼”，把它变黑，白色的按钮就显形了 */
+    /* 3. 强制顶部导航栏 (Header) 为深色 */
     header[data-testid="stHeader"] {
         background-color: #0e1117 !important;
     }
 
-    /* 3. 强制基础文本为白色 */
+    /* 4. 强制基础文本为白色 */
     h1, h2, h3, h4, h5, h6, p, label, .stMarkdown, span {
         color: white !important;
     }
 
+    /* === 【新修复】5. 隐藏 NumberInput 的加减按钮，保持10个框整齐划一 === */
+    [data-testid="stNumberInput"] button {
+        display: none !important;
+    }
+
     /* === 侧边栏收起后的展开按钮 (>) === */
     [data-testid="stSidebarCollapsedControl"] {
-        background-color: #262730 !important; /* 深灰背景 */
-        color: white !important;             /* 纯白箭头 */
+        background-color: #262730 !important;
+        color: white !important;
         border: 1px solid #4f4f4f !important;
         border-radius: 5px !important;
-        z-index: 1000000 !important;         /* 层级最高 */
+        z-index: 1000000 !important;
         display: block !important;
     }
     
-    /* 鼠标悬停时 */
     [data-testid="stSidebarCollapsedControl"]:hover {
         background-color: #1565c0 !important; 
         color: white !important;
@@ -89,7 +92,7 @@ st.markdown("""
         border-color: #262730 !important;
     }
 
-    /* 4. 修复输入框标签颜色 */
+    /* 修复输入框标签颜色 */
     .stNumberInput label, .stSlider label {
         color: white !important;
     }
