@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 # 1. 页面配置与全局设置
 # ==========================================
 st.set_page_config(
-    page_title="sICAS Recurrence Risk Tool",
+    page_title="sICAS Recurrence Prediction Tool",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整 (含侧边栏按钮修复) ---
+# --- 核心修复 2：CSS 样式调整 (含侧边栏按钮终极修复) ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -46,19 +46,28 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 侧边栏折叠/展开按钮可见性修复 === */
-    [data-testid="collapsedControl"] {
+    /* === 【终极修复】侧边栏收起后的展开按钮 (>) === */
+    /* 使用最新的 stSidebarCollapsedControl 选择器 */
+    [data-testid="stSidebarCollapsedControl"] {
+        background-color: #262730 !important; /* 深灰背景 */
+        color: #ffffff !important;           /* 纯白箭头 */
+        border: 1px solid #4f4f4f !important; /* 明显的边框 */
+        border-radius: 5px !important;
+        padding: 5px !important;
+        margin-top: 10px !important;         /* 稍微往下挪一点，别贴顶 */
+        margin-left: 10px !important;        /* 稍微往右挪一点 */
+        z-index: 100000 !important;          /* 强制层级最高，浮在一切之上 */
+        display: block !important;           /* 强制显示 */
+    }
+    
+    /* 鼠标悬停时变亮 */
+    [data-testid="stSidebarCollapsedControl"]:hover {
+        background-color: #1565c0 !important; /* 变蓝 */
         color: white !important;
-        background-color: #262730 !important;
-        border: 1px solid #4f4f4f;
-        border-radius: 5px;
-        top: 1rem !important;
-        left: 1rem !important;
+        border-color: #42a5f5 !important;
     }
-    [data-testid="collapsedControl"]:hover {
-        background-color: #4fc3f7 !important;
-        color: black !important;
-    }
+
+    /* 侧边栏展开时的关闭按钮 (X) */
     [data-testid="stSidebar"] button {
         color: white !important;
     }
@@ -189,7 +198,7 @@ def user_input_features():
         hscrp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=200.0, value=1.0, step=0.1,
                                 help="Inflammatory marker. High risk if > 3.0.")
         
-        # 【修改点 1】LDL help 提示加入悖论说明
+        # LDL help 提示加入悖论说明
         ldl = st.number_input("LDL-C (mmol/L)", min_value=0.5, max_value=20.0, value=2.5, step=0.1,
                               help="Low-density lipoprotein. Note: High baseline levels may trigger intensive treatment, paradoxically reducing predicted risk.")
         
@@ -286,7 +295,7 @@ if st.button("🚀 Run Analysis"):
             </div>
             """, unsafe_allow_html=True)
             
-            # 【修改点 2】加入精简版 LDL 悖论说明
+            # LDL 悖论说明
             st.caption("💡 **Note on LDL:** High baseline LDL often triggers intensive statin therapy, which may paradoxically correlate with lower predicted risk in retrospective data (Lipid Paradox).")
 
             explainer = shap.TreeExplainer(explainer_model)
