@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整 ---
+# --- 核心修复 2：CSS 样式调整（终极版） ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -46,34 +46,47 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 【终极修复】侧边栏收起后的“>”按钮 === */
-    /* 强制按钮一直显示，不透明，且加个背景色 */
+    /* === 【终极修复】让折叠按钮永久可见 === */
+    
+    /* 收起后的展开按钮（左上角 >）- 永久高亮 */
     [data-testid="collapsedControl"] {
-        display: block !important;
-        color: #ffffff !important;         /* 箭头白色 */
-        background-color: #1565c0 !important; /* 背景蓝色，显眼 */
-        opacity: 1 !important;             /* 关键：强制不透明度为 100% */
-        visibility: visible !important;    /* 关键：强制可见 */
-        border: 1px solid white !important;
-        border-radius: 8px !important;
-        top: 15px !important;              /* 固定位置 */
-        left: 15px !important;
-        width: 40px !important;            /* 稍微大一点，好点 */
-        height: 40px !important;
-        z-index: 999999 !important;        /* 保证在最上层 */
-        transition: none !important;       /* 取消忽隐忽现的动画 */
-    }
-
-    /* 鼠标悬停时的效果 */
-    [data-testid="collapsedControl"]:hover {
-        background-color: #0d47a1 !important; /* 悬停变深蓝 */
-        transform: scale(1.1); /* 稍微放大 */
-    }
-
-    /* === 侧边栏右上角的“X”关闭按钮 === */
-    button[kind="header"] {
+        opacity: 1 !important;
+        visibility: visible !important;
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
         color: white !important;
-        background-color: transparent !important;
+        border: 2px solid #4fc3f7 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(79, 195, 247, 0.6) !important;
+        width: 40px !important;
+        height: 40px !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        animation: pulse-glow 2s ease-in-out infinite;
+        z-index: 999999 !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover {
+        background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%) !important;
+        box-shadow: 0 4px 15px rgba(79, 195, 247, 0.9) !important;
+        transform: scale(1.1);
+    }
+    
+    /* 展开状态的收起按钮（侧边栏内 <） */
+    [data-testid="stSidebar"] button[kind="header"] {
+        background-color: #1976d2 !important;
+        color: white !important;
+        border-radius: 6px !important;
+        opacity: 1 !important;
+    }
+    
+    [data-testid="stSidebar"] button[kind="header"]:hover {
+        background-color: #1565c0 !important;
+    }
+    
+    /* 呼吸灯动画 */
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 2px 8px rgba(79, 195, 247, 0.5); }
+        50% { box-shadow: 0 4px 20px rgba(79, 195, 247, 0.9); }
     }
 
     /* === 侧边栏折叠框 (Expander) 样式 === */
