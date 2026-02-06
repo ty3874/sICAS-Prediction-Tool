@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整（超级暴力版） ---
+# --- 核心修复 2：CSS 样式调整（精准狙击版） ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -46,16 +46,13 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 【终极暴力修复】折叠按钮 - 多重选择器覆盖 === */
+    /* === 【精准修复】只针对侧边栏折叠按钮 === */
     
-    /* 方案1：通过 data-testid 定位 */
-    [data-testid="collapsedControl"],
-    [data-testid="baseButton-header"],
-    button[data-testid="collapsedControl"],
-    button[kind="header"] {
+    /* 收起状态的展开按钮（只在 Streamlit 主容器内） */
+    [data-testid="stAppViewContainer"] > section > div > div > button[data-testid="collapsedControl"],
+    section[aria-label="Main content"] button[data-testid="collapsedControl"] {
         opacity: 1 !important;
         visibility: visible !important;
-        display: block !important;
         background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
         color: white !important;
         border: 3px solid #4fc3f7 !important;
@@ -63,65 +60,47 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(79, 195, 247, 0.8) !important;
         width: 45px !important;
         height: 45px !important;
-        min-width: 45px !important;
-        min-height: 45px !important;
         position: fixed !important;
         top: 1rem !important;
         left: 1rem !important;
         z-index: 999999 !important;
-        cursor: pointer !important;
+        animation: pulse-sidebar 2s ease-in-out infinite !important;
     }
     
-    /* 方案2：通过 SVG 图标定位（Streamlit 的箭头图标） */
-    [data-testid="collapsedControl"] svg,
-    button[kind="header"] svg {
+    /* SVG 图标颜色（只针对折叠按钮内的） */
+    button[data-testid="collapsedControl"] svg {
         color: white !important;
         fill: white !important;
-        stroke: white !important;
-        width: 24px !important;
-        height: 24px !important;
     }
     
-    /* 方案3：鼠标悬停效果 */
-    [data-testid="collapsedControl"]:hover,
-    button[kind="header"]:hover {
+    /* 鼠标悬停效果 */
+    button[data-testid="collapsedControl"]:hover {
         background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%) !important;
         box-shadow: 0 0 30px rgba(79, 195, 247, 1) !important;
         transform: scale(1.15) !important;
-        transition: all 0.3s ease !important;
     }
     
-    /* 方案4：强制所有相关按钮可见 */
-    section[data-testid="stSidebar"] + div button,
-    .css-1544g2n button,
-    header button {
-        opacity: 1 !important;
-    }
-    
-    /* 方案5：呼吸灯动画（更强烈） */
-    @keyframes super-pulse {
+    /* 呼吸灯动画 */
+    @keyframes pulse-sidebar {
         0%, 100% { 
-            box-shadow: 0 0 20px rgba(79, 195, 247, 0.8),
-                        0 0 40px rgba(79, 195, 247, 0.4);
+            box-shadow: 0 0 20px rgba(79, 195, 247, 0.8);
         }
         50% { 
-            box-shadow: 0 0 40px rgba(79, 195, 247, 1),
-                        0 0 80px rgba(79, 195, 247, 0.6);
+            box-shadow: 0 0 40px rgba(79, 195, 247, 1);
         }
     }
-    
-    [data-testid="collapsedControl"] {
-        animation: super-pulse 1.5s ease-in-out infinite !important;
-    }
 
-    /* === 侧边栏内的折叠按钮（展开状态） === */
-    [data-testid="stSidebar"] button[kind="header"],
-    [data-testid="stSidebar"] [data-testid="baseButton-header"] {
+    /* 展开状态下的收起按钮（侧边栏内） */
+    [data-testid="stSidebar"] button[kind="header"] {
         background-color: #1976d2 !important;
         color: white !important;
         border: 2px solid #4fc3f7 !important;
         border-radius: 8px !important;
         opacity: 1 !important;
+    }
+    
+    [data-testid="stSidebar"] button[kind="header"]:hover {
+        background-color: #42a5f5 !important;
     }
 
     /* === 侧边栏折叠框 (Expander) 样式 === */
