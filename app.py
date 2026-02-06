@@ -46,22 +46,41 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 【关键修复】侧边栏折叠框 (Expander) 样式 === */
-    /* 强制折叠框的头部背景为深色，避免“白底白字”看不见的问题 */
+    /* === 【关键修复】侧边栏折叠/展开按钮可见性 === */
+    /* 1. 针对收起后出现在左上角的“>”箭头 */
+    [data-testid="collapsedControl"] {
+        color: white !important; /* 强制箭头变白 */
+        background-color: #262730 !important; /* 给它加个深灰底色 */
+        border: 1px solid #4f4f4f; /* 加个边框 */
+        border-radius: 5px; /* 圆角 */
+        top: 1rem !important; /* 稍微调整位置 */
+        left: 1rem !important;
+    }
+    
+    /* 2. 鼠标放上去变亮 */
+    [data-testid="collapsedControl"]:hover {
+        background-color: #4fc3f7 !important; /* 悬停变蓝 */
+        color: black !important;
+    }
+
+    /* 3. 针对展开状态下的“X”关闭按钮（在侧边栏右上角） */
+    [data-testid="stSidebar"] button {
+        color: white !important;
+    }
+
+    /* === 侧边栏折叠框 (Expander) 样式 === */
     [data-testid="stSidebar"] details > summary {
-        background-color: #262730 !important; /* 与侧边栏同色 */
-        color: white !important; /* 字体白色 */
-        border: 1px solid #4f4f4f; /* 加个边框更好看 */
+        background-color: #262730 !important;
+        color: white !important;
+        border: 1px solid #4f4f4f;
         border-radius: 5px;
     }
     
-    /* 鼠标悬停时的效果 */
     [data-testid="stSidebar"] details > summary:hover {
-        background-color: #383940 !important; /* 稍微变亮一点 */
-        color: #4fc3f7 !important; /* 字体变蓝 */
+        background-color: #383940 !important;
+        color: #4fc3f7 !important;
     }
 
-    /* 折叠框展开后的内部背景 */
     [data-testid="stSidebar"] details {
         background-color: #262730 !important;
         border-color: #262730 !important;
@@ -180,7 +199,7 @@ def user_input_features():
                               help="Low-density lipoprotein cholesterol.")
         glucose = st.number_input("Blood Glucose (mmol/L)", min_value=1.0, max_value=40.0, value=5.5, step=0.1)
 
-    # 人口学 (【修改点】改为默认展开 expanded=True)
+    # 人口学 (默认展开)
     with st.sidebar.expander("👤 Demographics", expanded=True):
         age = st.slider("Age (years)", 18, 100, 60)
         sbp = st.number_input("Systolic BP (mmHg)", min_value=60, max_value=240, value=130, step=1)
