@@ -16,24 +16,22 @@ st.set_page_config(
 )
 
 # --- 核心修复 1：Matplotlib 强制深色底 ---
-# 我们不再用透明底，而是用 Streamlit 的标准深色背景色 #0e1117
-# 这样即使图片被下载，白字在深底上也依然清晰
 plt.rcParams.update({
-    "figure.facecolor": "#0e1117",  # 图表背景色：深灰
-    "axes.facecolor": "#0e1117",  # 坐标轴背景色：深灰
-    "savefig.facecolor": "#0e1117",  # 保存背景色：深灰
-    "text.color": "white",  # 全局文字白色
-    "axes.labelcolor": "white",  # 坐标轴标签白色
-    "xtick.color": "white",  # X轴刻度白色
-    "ytick.color": "white",  # Y轴刻度白色
-    "font.size": 12,  # 字体加大
-    "font.family": "sans-serif"  # 无衬线字体
+    "figure.facecolor": "#0e1117",
+    "axes.facecolor": "#0e1117",
+    "savefig.facecolor": "#0e1117",
+    "text.color": "white",
+    "axes.labelcolor": "white",
+    "xtick.color": "white",
+    "ytick.color": "white",
+    "font.size": 12,
+    "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 暴力强制深色模式 ---
+# --- 核心修复 2：CSS 样式调整 ---
 st.markdown("""
 <style>
-    /* 1. 强制整个网页背景为深色 (覆盖浏览器的浅色模式) */
+    /* 1. 强制整个网页背景为深色 */
     [data-testid="stAppViewContainer"] {
         background-color: #0e1117;
     }
@@ -43,9 +41,30 @@ st.markdown("""
         background-color: #262730;
     }
 
-    /* 3. 强制所有基础文本为白色 */
-    h1, h2, h3, h4, h5, h6, p, label, .stMarkdown {
+    /* 3. 强制基础文本为白色 */
+    h1, h2, h3, h4, h5, h6, p, label, .stMarkdown, span {
         color: white !important;
+    }
+
+    /* === 【关键修复】侧边栏折叠框 (Expander) 样式 === */
+    /* 强制折叠框的头部背景为深色，避免“白底白字”看不见的问题 */
+    [data-testid="stSidebar"] details > summary {
+        background-color: #262730 !important; /* 与侧边栏同色 */
+        color: white !important; /* 字体白色 */
+        border: 1px solid #4f4f4f; /* 加个边框更好看 */
+        border-radius: 5px;
+    }
+    
+    /* 鼠标悬停时的效果 */
+    [data-testid="stSidebar"] details > summary:hover {
+        background-color: #383940 !important; /* 稍微变亮一点 */
+        color: #4fc3f7 !important; /* 字体变蓝 */
+    }
+
+    /* 折叠框展开后的内部背景 */
+    [data-testid="stSidebar"] details {
+        background-color: #262730 !important;
+        border-color: #262730 !important;
     }
 
     /* 4. 修复输入框标签颜色 */
@@ -141,6 +160,7 @@ st.sidebar.markdown("---")
 
 
 def user_input_features():
+    # 影像学 (默认展开)
     with st.sidebar.expander("📊 Imaging (CTP/Angio)", expanded=True):
         st.caption("Hemodynamic & Anatomical features")
         rcbf34 = st.number_input("rCBF < 34% Volume (ml)", min_value=0.0, max_value=400.0, value=0.0, step=1.0,
@@ -149,6 +169,7 @@ def user_input_features():
                                 help="Volume of tissue with delayed perfusion (penumbra).")
         stenosis = st.slider("Stenosis Severity (%)", 0, 100, 50, help="Degree of intracranial artery stenosis.")
 
+    # 生物标志物 (默认展开)
     with st.sidebar.expander("🩸 Biomarkers & Labs", expanded=True):
         st.caption("Metabolic & Inflammatory markers")
         egfr = st.number_input("eGFR (ml/min)", min_value=0.0, max_value=150.0, value=90.0, step=1.0,
@@ -159,7 +180,8 @@ def user_input_features():
                               help="Low-density lipoprotein cholesterol.")
         glucose = st.number_input("Blood Glucose (mmol/L)", min_value=1.0, max_value=40.0, value=5.5, step=0.1)
 
-    with st.sidebar.expander("👤 Demographics", expanded=False):
+    # 人口学 (【修改点】改为默认展开 expanded=True)
+    with st.sidebar.expander("👤 Demographics", expanded=True):
         age = st.slider("Age (years)", 18, 100, 60)
         sbp = st.number_input("Systolic BP (mmHg)", min_value=60, max_value=240, value=130, step=1)
         nihss = st.slider("NIHSS Score (Baseline)", 0, 42, 2)
@@ -272,7 +294,7 @@ if st.button("🚀 Run Analysis"):
                     text.set_color("white")
                     text.set_fontsize(11)
 
-                # 设置背景色为深灰，避免在白色浏览器中看不见
+                # 设置背景色为深灰
                 fig.patch.set_facecolor('#0e1117')
                 ax.set_facecolor('#0e1117')
 
@@ -326,15 +348,11 @@ st.divider()
 st.markdown("""
 ### ⚠️ Disclaimer & Usage Guide
 
-**1. Research Use Only (RUO):**  
-This tool is designed for **academic research and educational purposes only**. It has not been cleared or approved by the FDA, NMPA, or other regulatory bodies for clinical diagnosis or treatment guidance.
+**1. Research Use Only (RUO):** This tool is designed for **academic research and educational purposes only**. It has not been cleared or approved by the FDA, NMPA, or other regulatory bodies for clinical diagnosis or treatment guidance.
 
-**2. Target Population:**  
-This tool is validated **ONLY** for sICAS patients receiving medical management. **DO NOT** use for patients post-acute reperfusion therapy (IVT/EVT).
+**2. Target Population:** This tool is validated **ONLY** for sICAS patients receiving medical management. **DO NOT** use for patients post-acute reperfusion therapy (IVT/EVT).
 
-**3. Local Validation Required:**  
-The underlying model was trained on a specific single-center cohort. **External validation and recalibration** using your local patient data are strictly required before any consideration of clinical deployment.
+**3. Local Validation Required:** The underlying model was trained on a specific single-center cohort. **External validation and recalibration** using your local patient data are strictly required before any consideration of clinical deployment.
 
-**4. No Medical Advice:**  
-The output of this tool should **not** replace professional clinical judgment. All treatment decisions must be made by qualified healthcare providers based on the comprehensive evaluation of the patient.
+**4. No Medical Advice:** The output of this tool should **not** replace professional clinical judgment. All treatment decisions must be made by qualified healthcare providers based on the comprehensive evaluation of the patient.
 """)
