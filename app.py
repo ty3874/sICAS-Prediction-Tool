@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整（精准狙击版） ---
+# --- 核心修复 2：CSS 样式调整 (含侧边栏按钮修复) ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -46,61 +46,21 @@ st.markdown("""
         color: white !important;
     }
 
-    /* === 【精准修复】只针对侧边栏折叠按钮 === */
-    
-    /* 收起状态的展开按钮（只在 Streamlit 主容器内） */
-    [data-testid="stAppViewContainer"] > section > div > div > button[data-testid="collapsedControl"],
-    section[aria-label="Main content"] button[data-testid="collapsedControl"] {
-        opacity: 1 !important;
-        visibility: visible !important;
-        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+    /* === 侧边栏折叠/展开按钮可见性修复 === */
+    [data-testid="collapsedControl"] {
         color: white !important;
-        border: 3px solid #4fc3f7 !important;
-        border-radius: 10px !important;
-        box-shadow: 0 0 20px rgba(79, 195, 247, 0.8) !important;
-        width: 45px !important;
-        height: 45px !important;
-        position: fixed !important;
+        background-color: #262730 !important;
+        border: 1px solid #4f4f4f;
+        border-radius: 5px;
         top: 1rem !important;
         left: 1rem !important;
-        z-index: 999999 !important;
-        animation: pulse-sidebar 2s ease-in-out infinite !important;
     }
-    
-    /* SVG 图标颜色（只针对折叠按钮内的） */
-    button[data-testid="collapsedControl"] svg {
+    [data-testid="collapsedControl"]:hover {
+        background-color: #4fc3f7 !important;
+        color: black !important;
+    }
+    [data-testid="stSidebar"] button {
         color: white !important;
-        fill: white !important;
-    }
-    
-    /* 鼠标悬停效果 */
-    button[data-testid="collapsedControl"]:hover {
-        background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%) !important;
-        box-shadow: 0 0 30px rgba(79, 195, 247, 1) !important;
-        transform: scale(1.15) !important;
-    }
-    
-    /* 呼吸灯动画 */
-    @keyframes pulse-sidebar {
-        0%, 100% { 
-            box-shadow: 0 0 20px rgba(79, 195, 247, 0.8);
-        }
-        50% { 
-            box-shadow: 0 0 40px rgba(79, 195, 247, 1);
-        }
-    }
-
-    /* 展开状态下的收起按钮（侧边栏内） */
-    [data-testid="stSidebar"] button[kind="header"] {
-        background-color: #1976d2 !important;
-        color: white !important;
-        border: 2px solid #4fc3f7 !important;
-        border-radius: 8px !important;
-        opacity: 1 !important;
-    }
-    
-    [data-testid="stSidebar"] button[kind="header"]:hover {
-        background-color: #42a5f5 !important;
     }
 
     /* === 侧边栏折叠框 (Expander) 样式 === */
@@ -110,12 +70,10 @@ st.markdown("""
         border: 1px solid #4f4f4f;
         border-radius: 5px;
     }
-    
     [data-testid="stSidebar"] details > summary:hover {
         background-color: #383940 !important;
         color: #4fc3f7 !important;
     }
-
     [data-testid="stSidebar"] details {
         background-color: #262730 !important;
         border-color: #262730 !important;
@@ -230,8 +188,11 @@ def user_input_features():
                                help="Renal function. Normal > 90.")
         hscrp = st.number_input("hs-CRP (mg/L)", min_value=0.0, max_value=200.0, value=1.0, step=0.1,
                                 help="Inflammatory marker. High risk if > 3.0.")
+        
+        # 【修改点 1】LDL help 提示加入悖论说明
         ldl = st.number_input("LDL-C (mmol/L)", min_value=0.5, max_value=20.0, value=2.5, step=0.1,
-                              help="Low-density lipoprotein cholesterol.")
+                              help="Low-density lipoprotein. Note: High baseline levels may trigger intensive treatment, paradoxically reducing predicted risk.")
+        
         glucose = st.number_input("Blood Glucose (mmol/L)", min_value=1.0, max_value=40.0, value=5.5, step=0.1)
 
     # 人口学 (默认展开)
@@ -318,11 +279,15 @@ if st.button("🚀 Run Analysis"):
         if explainer_model:
             st.divider()
             st.subheader("2. Mechanistic Driver Analysis")
+            
             st.markdown("""
-            <div style="font-size: 14px; color: #b0bec5; margin-bottom: 15px;">
-                ℹ️ This section uses a <strong>Surrogate Model (SHAP)</strong> to visualize the key factors driving the risk score UP (Red) or DOWN (Blue) for this specific patient.
+            <div style="font-size: 14px; color: #b0bec5; margin-bottom: 5px;">
+                ℹ️ This section uses a <strong>Surrogate Model (SHAP)</strong> to visualize the key factors driving the risk score UP (Red) or DOWN (Blue).
             </div>
             """, unsafe_allow_html=True)
+            
+            # 【修改点 2】加入精简版 LDL 悖论说明
+            st.caption("💡 **Note on LDL:** High baseline LDL often triggers intensive statin therapy, which may paradoxically correlate with lower predicted risk in retrospective data (Lipid Paradox).")
 
             explainer = shap.TreeExplainer(explainer_model)
             shap_values = explainer(input_df)
