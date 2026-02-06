@@ -28,7 +28,7 @@ plt.rcParams.update({
     "font.family": "sans-serif"
 })
 
-# --- 核心修复 2：CSS 样式调整 (含侧边栏按钮终极修复) ---
+# --- 核心修复 2：CSS 样式调整 (含顶栏修复) ---
 st.markdown("""
 <style>
     /* 1. 强制整个网页背景为深色 */
@@ -41,30 +41,31 @@ st.markdown("""
         background-color: #262730;
     }
 
+    /* === 【关键修复】强制顶部导航栏 (Header) 为深色 === */
+    /* 这就是之前的“漏网之鱼”，把它变黑，白色的按钮就显形了 */
+    header[data-testid="stHeader"] {
+        background-color: #0e1117 !important;
+    }
+
     /* 3. 强制基础文本为白色 */
     h1, h2, h3, h4, h5, h6, p, label, .stMarkdown, span {
         color: white !important;
     }
 
-    /* === 【终极修复】侧边栏收起后的展开按钮 (>) === */
-    /* 使用最新的 stSidebarCollapsedControl 选择器 */
+    /* === 侧边栏收起后的展开按钮 (>) === */
     [data-testid="stSidebarCollapsedControl"] {
         background-color: #262730 !important; /* 深灰背景 */
-        color: #ffffff !important;           /* 纯白箭头 */
-        border: 1px solid #4f4f4f !important; /* 明显的边框 */
+        color: white !important;             /* 纯白箭头 */
+        border: 1px solid #4f4f4f !important;
         border-radius: 5px !important;
-        padding: 5px !important;
-        margin-top: 10px !important;         /* 稍微往下挪一点，别贴顶 */
-        margin-left: 10px !important;        /* 稍微往右挪一点 */
-        z-index: 100000 !important;          /* 强制层级最高，浮在一切之上 */
-        display: block !important;           /* 强制显示 */
+        z-index: 1000000 !important;         /* 层级最高 */
+        display: block !important;
     }
     
-    /* 鼠标悬停时变亮 */
+    /* 鼠标悬停时 */
     [data-testid="stSidebarCollapsedControl"]:hover {
-        background-color: #1565c0 !important; /* 变蓝 */
+        background-color: #1565c0 !important; 
         color: white !important;
-        border-color: #42a5f5 !important;
     }
 
     /* 侧边栏展开时的关闭按钮 (X) */
