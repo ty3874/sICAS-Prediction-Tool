@@ -115,6 +115,8 @@ st.markdown("""
     .risk-card-high h2 { color: white !important; margin: 0; font-weight: 800; font-size: 24px; }
     .risk-card-high p { color: #ffcdd2 !important; margin-top: 5px; font-size: 16px; font-weight: 500; }
     .risk-card-high .rec { border-top: 1px solid rgba(255,255,255,0.3); margin-top:15px; padding-top:10px; font-style: italic; font-size: 15px; color: #ffebee !important; line-height: 1.4; }
+    /* 新增：终点说明样式 */
+    .risk-endpoint { font-size: 13px !important; font-style: italic; opacity: 0.9; margin-bottom: 10px !important; }
 
     /* 低危卡片 */
     .risk-card-low { 
@@ -185,7 +187,7 @@ st.sidebar.markdown("---")
 
 
 def user_input_features():
-    # 影像学 (默认展开) —— 【修改点】改为 CTP/CTA
+    # 影像学 (默认展开)
     with st.sidebar.expander("📊 Imaging (CTP/CTA)", expanded=True):
         st.caption("Hemodynamic & Anatomical features")
         rcbf34 = st.number_input("rCBF < 34% Volume (ml)", min_value=0.0, max_value=400.0, value=0.0, step=1.0,
@@ -229,19 +231,23 @@ input_df = user_input_features()
 # ==========================================
 st.title("🧠 sICAS Recurrence Prediction Tool")
 
+# 【修改点 1】: 在架构图下方明确 1年期预测
 st.markdown("""
 <div style="background-color: #262730; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #1565c0; margin-bottom: 20px;">
     <strong>Model Architecture:</strong> 
     <span style="color: #4fc3f7;">Voting Ensemble</span> (for High-Performance Prediction) + 
-    <span style="color: #81c784;">RF Surrogate</span> (for Mechanistic Interpretation)
+    <span style="color: #81c784;">RF Surrogate</span> (for Mechanistic Interpretation) <br>
+    <span style="font-size: 14px; opacity: 0.8; margin-top: 5px; display: block;">
+        🎯 <strong>Primary Endpoint:</strong> 1-Year Target Vessel Ischemic Stroke or Neurogenic Death
+    </span>
 </div>
 """, unsafe_allow_html=True)
 
-# 适用人群警告
+# 【修改点 2】: 警告框中增加 Outcome 定义
 st.warning("""
-**⚠️ Target Population & Exclusions:**
-This tool is intended for **symptomatic ICAS patients receiving medical management**. 
-It is **NOT applicable** to patients who underwent acute reperfusion therapy (**IV Thrombolysis or Mechanical Thrombectomy**) during the index event, as their clinical profiles and risk patterns likely differ, and this model was **not trained or validated** on this specific population.
+**⚠️ Target Population & Outcome Definition:**
+* **Population:** Symptomatic ICAS patients receiving medical management (Excluding acute IVT/EVT).
+* **Outcome:** The model predicts the risk of **Target Vessel Ischemic Stroke** or **Neurogenic Death** within **1 Year** of the index event.
 """)
 
 CLINICAL_THRESHOLD = 0.289
@@ -255,11 +261,13 @@ if st.button("🚀 Run Analysis"):
 
         col1, col2 = st.columns([3, 1])
 
+        # 【修改点 3】: 在结果卡片中明确标注 Endpoint
         with col1:
             if prob >= CLINICAL_THRESHOLD:
                 st.markdown(f"""
                 <div class="risk-card-high">
                     <h2>⚠️ High Risk of Recurrence</h2>
+                    <p class="risk-endpoint">Outcome: 1-Year Target Vessel Ischemic Stroke / Neurogenic Death</p>
                     <p>
                         Prediction Probability: <strong>{prob:.1%}</strong>
                         <span style="font-size:14px; opacity:0.8; margin-left: 10px;">(Threshold: {CLINICAL_THRESHOLD:.3f})</span>
@@ -273,6 +281,7 @@ if st.button("🚀 Run Analysis"):
                 st.markdown(f"""
                 <div class="risk-card-low">
                     <h2>✅ Low Risk Profile</h2>
+                    <p class="risk-endpoint">Outcome: 1-Year Target Vessel Ischemic Stroke / Neurogenic Death</p>
                     <p>
                         Prediction Probability: <strong>{prob:.1%}</strong>
                         <span style="font-size:14px; opacity:0.8; margin-left: 10px;">(Threshold: {CLINICAL_THRESHOLD:.3f})</span>
