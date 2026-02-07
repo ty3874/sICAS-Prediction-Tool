@@ -115,7 +115,7 @@ st.markdown("""
     .risk-card-high h2 { color: white !important; margin: 0; font-weight: 800; font-size: 24px; }
     .risk-card-high p { color: #ffcdd2 !important; margin-top: 5px; font-size: 16px; font-weight: 500; }
     .risk-card-high .rec { border-top: 1px solid rgba(255,255,255,0.3); margin-top:15px; padding-top:10px; font-style: italic; font-size: 15px; color: #ffebee !important; line-height: 1.4; }
-    /* 新增：终点说明样式 */
+    /* 终点说明样式 */
     .risk-endpoint { font-size: 13px !important; font-style: italic; opacity: 0.9; margin-bottom: 10px !important; }
 
     /* 低危卡片 */
@@ -231,19 +231,17 @@ input_df = user_input_features()
 # ==========================================
 st.title("🧠 sICAS Recurrence Prediction Tool")
 
-# 【修改点 1】: 在架构图下方明确 1年期预测
+# 【已删除】: 架构图下方的额外 endpoint 说明
+
 st.markdown("""
 <div style="background-color: #262730; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #1565c0; margin-bottom: 20px;">
     <strong>Model Architecture:</strong> 
     <span style="color: #4fc3f7;">Voting Ensemble</span> (for High-Performance Prediction) + 
-    <span style="color: #81c784;">RF Surrogate</span> (for Mechanistic Interpretation) <br>
-    <span style="font-size: 14px; opacity: 0.8; margin-top: 5px; display: block;">
-        🎯 <strong>Primary Endpoint:</strong> 1-Year Target Vessel Ischemic Stroke or Neurogenic Death
-    </span>
+    <span style="color: #81c784;">RF Surrogate</span> (for Mechanistic Interpretation)
 </div>
 """, unsafe_allow_html=True)
 
-# 【修改点 2】: 警告框中增加 Outcome 定义
+# 警告框中保留 Outcome 定义
 st.warning("""
 **⚠️ Target Population & Outcome Definition:**
 * **Population:** Symptomatic ICAS patients receiving medical management (Excluding acute IVT/EVT).
@@ -261,7 +259,7 @@ if st.button("🚀 Run Analysis"):
 
         col1, col2 = st.columns([3, 1])
 
-        # 【修改点 3】: 在结果卡片中明确标注 Endpoint
+        # 结果卡片中保留 Endpoint 说明
         with col1:
             if prob >= CLINICAL_THRESHOLD:
                 st.markdown(f"""
