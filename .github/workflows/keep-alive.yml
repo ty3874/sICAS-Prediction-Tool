@@ -1,0 +1,15 @@
+name: Keep Streamlit Alive
+
+on:
+  schedule:
+    # 每 20 分钟运行一次 (时间间隔可调整)
+    - cron: "*/20 * * * *"
+  workflow_dispatch: # 允许你手动点击按钮运行测试
+
+jobs:
+  wake-up:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Streamlit App
+        # 注意：把下面的网址换成你自己的 Streamlit 网页地址！
+        run: curl -s https://sicas-prediction-tool-kgsulxxgdzjidfaipngccv.streamlit.app > /dev/null
